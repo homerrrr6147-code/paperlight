@@ -1,89 +1,73 @@
 # Paperlight
 
-Windows 本地论文库与中英双栏翻译阅读器。**0.1.6 为 MIT 开源预览版**，面向英文原生 PDF，仍在完善复杂排版与数据管理。
+一款 Windows 本地论文阅读与翻译工具：**左边看英文 PDF，右边读中文译文**。支持整篇翻译、点击译文定位原文，以及手动修改和保存译文。
 
-## 功能
+## 下载安装
 
-- PDF / 文件夹导入、SHA-256 去重，保留原文件。
-- 自定义论文显示名称、标签、星标和阅读页码恢复。
-- 左侧连续 PDF、右侧可编辑中文译文；点击文本块定位并高亮原文。
-- 当前页、全文和单块翻译；复用已保存译文，保护人工修改。
-- 全文最多两个并发请求，可暂停并在重开后手动继续。
-- PDF.js 文本与坐标提取，常见双栏支持和提取诊断。
-- Rust 后台请求，API Key 保存在 Windows 凭据管理器。
+前往 **[下载页面](https://github.com/homerrrr6147-code/paperlight/releases)**，展开对应版本的 **Assets**：
 
-## 下载与使用
+- **安装版**：下载 `Paperlight-版本-windows-x64-setup.exe`，双击安装。
+- **免安装版**：下载 `Paperlight-版本-windows-x64-portable.zip`，解压后运行 `Paperlight.exe`。
 
-在仓库 **Releases** 选择 Windows x64 **Pre-release**。本地尚未上传时文件位于 `outputs/release-0.1.6/`。
+普通使用无需下载源码，也无需安装 Python、Node.js 或 Rust。仅支持 Windows x64；若提示缺少 WebView2，请安装 [Microsoft WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/)。当前为未签名预览版，Windows 可能显示未知发布者。
 
-| 文件 | 用途 |
+## 使用方法
+
+### 1. 导入论文
+
+点击 **“导入 PDF”** 选择文件，也可以把 PDF 拖入窗口；批量导入请点击 **“导入文件夹”**。导入会保留原文件，完全相同的文件会自动去重。
+
+点击左侧论文即可阅读。建议使用可以选中、复制文字的英文 PDF；扫描件暂不支持。
+
+### 2. 配置翻译 API（首次使用）
+
+以 **DeepSeek 官方 API** 为例：
+
+1. 打开 [DeepSeek 开放平台](https://platform.deepseek.com/)，注册或登录，在 **API keys** 页面创建密钥，并确认账户有可用 API 余额。
+2. 打开 Paperlight 的 **“翻译设置”**，填写：
+
+   | 设置项 | 填写内容 |
+   | --- | --- |
+   | API Base URL | `https://api.deepseek.com` |
+   | 模型名 | `deepseek-flash` |
+   | API Key | 粘贴你在开放平台创建的完整密钥 |
+
+3. 点击 **“保存”**，然后打开一篇论文，点击 **“翻译当前页”** 测试。右侧出现中文译文即表示调用成功；保存设置本身不会测试连接。
+
+**不要把聊天网页地址填入 Base URL，也不要在末尾添加 `/chat/completions`。** 上述配置依据 [DeepSeek 官方接入说明](https://api-docs.deepseek.com/zh-cn/)。当前版本主要适配 DeepSeek，更换其他服务商并不保证可用。
+
+密钥保存在本机 Windows 凭据管理器。再次打开设置时，API Key 输入框留空表示保留已保存的密钥；要更换密钥，粘贴新值后保存即可。不要在截图或问题反馈中公开密钥。
+
+软件开源免费，**翻译 API 按供应商规则单独计费**，价格见 [DeepSeek 官方定价](https://api-docs.deepseek.com/zh-cn/quick_start/pricing/)。新翻译会把所需论文文本发送给所选供应商；本地阅读和查看已保存译文无需联网。
+
+### 3. 翻译与对照阅读
+
+| 想做什么 | 怎么操作 |
 | --- | --- |
-| `Paperlight-0.1.6-windows-x64-setup.exe` | Windows 安装包 |
-| `Paperlight-0.1.6-windows-x64-portable.zip` | 解压运行 Paperlight.exe |
-| `Paperlight-0.1.6-source.zip` | 干净源码快照 |
-| `SHA256SUMS.txt` | 下载文件校验值 |
+| 先翻译一页 | 用顶部页码框跳到目标页，点击 **“翻译当前页”** |
+| 翻译整篇论文 | 点击 **“翻译全文”**，顶部显示进度；可点击 **“暂停全文翻译”**，之后点击 **“继续全文翻译”** |
+| 查看译文对应的原文 | 点击右侧文本块或 **“定位原文”**，左侧会跳转并高亮对应区域 |
+| 让右侧重新跟随当前 PDF 页 | 右侧独立滚动后，点击 **“回到当前页”** |
+| 补翻缺失段落 | 点击该段的 **“翻译此块”** |
+| 重翻自动生成的译文 | 点击该段的 **“重新翻译此块”** |
+| 手动修正译文 | 直接编辑右侧文本框，点击框外后自动保存；显示 **“人工译文已保护”** 后，不会被自动重译覆盖 |
 
-1. 安装或解压后启动，需要 Windows x64 和 Microsoft Edge WebView2 Runtime。
-2. 导入英文原生 PDF。左侧铅笔按钮可修改显示名称和标签。
-3. 在“翻译设置”配置 Base URL、模型名、API Key，再点击翻译按钮。
-4. 缺失块可单独翻译，自动译文可单块重译，人工编辑在离开文本框后保存。
+已保存的译文会在重开时直接读取，无需再次翻译。全文翻译默认跳过参考文献及无法可靠提取的页面；暂停时正在进行的请求仍可能完成并计费。
 
-程序未代码签名，Windows 可能显示未知发布者。请从项目 Releases 下载并核对校验值，不需要关闭系统安全功能。
+### 4. 整理论文
 
-## 隐私、数据与费用
+点击左侧论文旁的 **铅笔按钮**，修改显示名称或添加标签。多个标签用逗号或分号分隔，例如 `强化学习，待读，复现`；点击 **“保存”** 即可。名称修改不影响原 PDF 文件名。点击星形按钮可标记重点论文。
 
-- PDF、提取文本、译文、人工修改与任务进度存于本机 **WebView IndexedDB**，目前尚未使用 SQLite。
-- 默认数据根目录为 `%LOCALAPPDATA%\dev.paperlight.reader\`。免安装版也使用应用数据目录，资料不会随 exe 一起移动。
-- 原始文件保留，修改显示名称不会重命名原 PDF。
-- 已有译文与阅读可离线使用。新翻译会向所选 API 地址发送所需原文、论文标题和页码；漏数字补译还会发送该块上一版译文与缺失数字。
-- 后端使用聊天补全 JSON 协议并发送 `thinking.type=disabled`，并非兼容所有供应商。默认配置为 `https://api.deepseek.com` / `deepseek-flash`；模型可用性与价格请以供应商官方文档为准。
-- 记录可取得的实际 token usage，尚无完整逐次计费账本和费用估算。超时、失败、补译和重试均可能产生费用。
-- 暂无应用内一致性备份/恢复。请保留原 PDF，重要人工译文另行保存，不要清理应用 WebView 目录。安装、升级和回滚尚未完整验证。
+## 常见问题
 
-## 已知限制
+- **翻译失败怎么办？** 查看顶部“最近错误”或底部状态栏。先检查密钥、API 余额、Base URL 和模型名；网络超时可稍后重试。全文中断后点击“继续全文翻译”，单段缺失则使用“翻译此块”。已保存的译文会保留，但重试仍可能产生费用。
+- **出现串栏、缺字或乱码？** 点击“提取诊断”检查原文提取结果。复杂双栏、公式和表格仍可能识别不准；可在 [Issues](https://github.com/homerrrr6147-code/paperlight/issues) 提供公开论文链接、页码和截图。
+- **资料存在哪里？** 保存在本机 `%LOCALAPPDATA%\dev.paperlight.reader\` 下。免安装版也使用此目录，移动 exe 不会带走资料。当前暂无应用内备份恢复，请保留原 PDF，并另行保存重要人工译文，不要清理该目录。
 
-不支持 OCR、云同步、账户、团队协作、Word 引文插件或中文 PDF 精确排版导出。尚无全文搜索、收藏夹、回收站和术语表。
+## 更多
 
-公式、复杂表格和低质量正文会跳过或仅翻译图注。分栏、参考文献和跨页处理仍采用启发式规则；数字、ID 和 JSON 校验不能保证翻译准确。测试通过不意味着所有 PDF 均受支持。
+当前为预览版，暂不支持 OCR、云同步、全文搜索和中文 PDF 导出。
 
-解析规则升级若改变分块，旧译文及人工修改会归档并可在页末查看，新分块需主动重译。
+[更新记录](CHANGELOG.md) · [后续计划](docs/ROADMAP.md) · [开发与贡献](CONTRIBUTING.md) · [安全说明](SECURITY.md)
 
-## 从源码运行
-
-准备 Node.js 24、npm、Rust stable（MSVC）、Microsoft C++ Build Tools 的“使用 C++ 的桌面开发”工作负载以及 WebView2。参见 [Tauri Windows 前置条件](https://v2.tauri.app/start/prerequisites/)。
-
-```powershell
-npm ci
-npm test
-npm run tauri:dev
-```
-
-浏览器预览不支持后台 API 翻译：
-
-```powershell
-npm run build
-npm run preview -- --host 127.0.0.1
-```
-
-Windows 发布构建：
-
-```powershell
-npm run build
-cargo test --locked --manifest-path src-tauri/Cargo.toml
-npm run notices
-npm run tauri:build -- --bundles nsis
-powershell -ExecutionPolicy Bypass -File scripts/package-release.ps1
-```
-
-打包脚本从当前 Git 提交导出源码，请先提交发布变更。构建需下载 npm、Cargo、NSIS 依赖，不依赖开发者本机工具链或代理。普通测试无需密钥，不调用付费 API。真实 PDF 未随仓库分发，缺失样本的用例会跳过，见 [测试说明](docs/TESTING.md)。
-
-## 项目结构与参与
-
-- `src/`：React 界面、PDF 解析、IndexedDB、翻译编排与测试。
-- `src-tauri/`：桌面外壳、Windows 凭据与 HTTP 请求。
-- `scripts/`：许可文本生成和发布打包。
-- `.github/`：Windows CI、问题和 PR 模板。
-
-见 [贡献指南](CONTRIBUTING.md)、[安全说明](SECURITY.md)、[更新记录](CHANGELOG.md)、[路线图](docs/ROADMAP.md) 和 [发布流程](docs/RELEASING.md)。
-
-项目代码使用 [MIT](LICENSE)。第三方依赖使用各自许可证，见 [第三方说明](THIRD_PARTY_NOTICES.md)。论文和用户译文不属于代码许可证授权范围。
+项目采用 [MIT 许可证](LICENSE)，第三方组件见 [许可说明](THIRD_PARTY_NOTICES.md)。

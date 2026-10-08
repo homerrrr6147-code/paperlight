@@ -6,7 +6,7 @@
 
 ## 构建
 
-同步修改 package.json、package-lock.json、Cargo.toml、Cargo.lock、tauri.conf.json 和界面版本，并更新 CHANGELOG。运行 README 的测试后：
+同步修改 package.json、package-lock.json、Cargo.toml、Cargo.lock、tauri.conf.json 和界面版本，并更新 CHANGELOG。按 [开发指南](../CONTRIBUTING.md) 准备环境、安装依赖并完成测试和前端构建后：
 
 ```powershell
 npm run notices
